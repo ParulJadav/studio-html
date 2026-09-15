@@ -1,17 +1,29 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const Brevo = require('@getbrevo/brevo');
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.')); // static files (login.html, css, js) સર્વ કરવા માટે
+
+// મેઈન ફોલ્ડરની જ સ્ટેટિક ફાઈલો (HTML, CSS, JS) સર્વ કરવા માટે
+app.use(express.static(__dirname));
 
 // MongoDB Client Connection
 const mongoUri = process.env.MONGO_URI;
 const client = new MongoClient(mongoUri || "");
+
+// ------------------- ROUTES -------------------
+
+// Home Route (login.html બતાવવા માટે)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
 
 // 1. Brevo Email OTP Endpoint
 app.post('/api/send-email-otp', async (req, res) => {
@@ -60,12 +72,13 @@ app.post('/api/register-user', async (req, res) => {
     } catch (error) {
         console.error("MongoDB Error:", error);
         res.status(500).json({ success: false, message: 'Database saving failed' });
-    } finally {
-        await client.close();
     }
 });
 
+// ------------------- SERVER LISTEN -------------------
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+module.exports = app;

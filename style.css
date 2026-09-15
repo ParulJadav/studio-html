@@ -268,3 +268,8 @@ input:focus, select:focus {
 .tnc-content-box p {
     margin-bottom: 10px;
 }
+
+/* Hidden Elements ને સંતાડવા માટે */
+.hidden {
+    display: none !important;
+}
