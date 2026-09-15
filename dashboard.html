@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio HTML - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #1e1e2e;
+            --bg-card: #2b2b3d;
+            --accent: #6c5ce7;
+            --text: #ffffff;
+            --text-dim: #a0a0b2;
+            --border: #3f3f56;
+            --danger: #ff5555;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg-dark); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar Navigation & Compact Overview */
+        .sidebar { width: 280px; background: #181825; border-right: 1px solid var(--border); padding: 20px; display: flex; flex-direction: column; justify-content: space-between; shrink: 0; }
+        .brand-logo { width: 100%; height: auto; margin-bottom: 20px; cursor: pointer; }
+        .nav-links { list-style: none; margin-bottom: 20px; }
+        .nav-links li { margin-bottom: 8px; }
+        .nav-links a { color: var(--text-dim); text-decoration: none; padding: 10px 14px; display: flex; align-items: center; gap: 12px; border-radius: 8px; transition: 0.3s; font-weight: 500; }
+        .nav-links a.active, .nav-links a:hover { background: var(--accent); color: white; }
+        
+        /* Compact Overview Panel inside Sidebar */
+        .sidebar-overview { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 15px; margin-top: 10px; }
+        .sidebar-overview h4 { font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; }
+        .stat-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.9rem; }
+        .stat-item:last-child { margin-bottom: 0; }
+        .stat-value { font-weight: bold; color: #38bdf8; }
+
+        /* Main Workspace Area */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        
+        /* Top Navigation Header */
+        .top-bar { height: 65px; background: #181825; border-bottom: 1px solid var(--border); padding: 0 25px; display: flex; justify-content: space-between; align-items: center; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        .avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #818cf8); display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; }
+        .user-name-text { font-weight: 600; font-size: 1.05rem; }
+        
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .btn-header { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .btn-header:hover { background: rgba(255,255,255,0.05); }
+        .btn-danger-outline { color: var(--danger); border-color: rgba(255,85,85,0.4); }
+        .btn-danger-outline:hover { background: var(--danger); color: white; }
+
+        /* Content Views */
+        .view-panel { padding: 25px; overflow-y: auto; height: calc(100vh - 65px); }
+        
+        /* Buttons & Dynamic Tables */
+        .btn-primary { background: var(--accent); color: white; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        
+        .project-section { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; }
+        .project-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 14px; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-dim); font-weight: 500; font-size: 0.9rem; }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        .action-btns { display: flex; gap: 8px; }
+        .btn-icon { background: transparent; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+        .btn-icon:hover { background: rgba(255,255,255,0.1); }
+        
+        /* Settings Form Grid */
+        .settings-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 25px; max-width: 600px; }
+        
+        /* Modal Overlay */
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-card { background: var(--bg-card); width: 420px; padding: 25px; border-radius: 12px; border: 1px solid var(--border); }
+        .hidden { display: none !important; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; color: var(--text-dim); font-size: 0.9rem; }
+        .form-group input { width: 100%; padding: 11px; background: #1a1a26; border: 1px solid var(--border); color: white; border-radius: 6px; outline: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar with SVG Logo & Compact Overview -->
+    <aside class="sidebar">
+        <div>
+            <!-- Custom SVG Logo -->
+            <div class="brand-logo" onclick="switchTab('projects')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 100" width="100%" height="100%">
+                  <defs>
+                    <linearGradient id="bg-grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0f172a" />
+                      <stop offset="100%" stop-color="#1e293b" />
+                    </linearGradient>
+                    <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#38bdf8" />
+                      <stop offset="50%" stop-color="#818cf8" />
+                      <stop offset="100%" stop-color="#c084fc" />
+                    </linearGradient>
+                    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#38bdf8" flood-opacity="0.3"/>
+                    </filter>
+                  </defs>
+                  <g transform="translate(10, 10)" filter="url(#shadow)">
+                    <rect x="0" y="0" width="80" height="80" rx="16" fill="url(#bg-grad2)" stroke="#334155" stroke-width="2"/>
+                    <rect x="4" y="4" width="72" height="72" rx="12" fill="none" stroke="url(#brand-grad)" stroke-width="1.5" stroke-dasharray="8 4"/>
+                    <path d="M 24 32 L 14 40 L 24 48" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <line x1="44" y1="26" x2="36" y2="54" stroke="#c084fc" stroke-width="3.5" stroke-linecap="round"/>
+                    <path d="M 56 32 L 66 40 L 56 48" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  </g>
+                  <text x="105" y="50" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="26" letter-spacing="4">STUDIO</text>
+                  <text x="228" y="50" fill="url(#brand-grad)" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" letter-spacing="2">HTML</text>
+                  <circle cx="332" cy="44" r="4" fill="#38bdf8" />
+                  <text x="106" y="72" fill="#64748b" font-family="'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="11" letter-spacing="2">DEVELOPER WORKSPACE</text>
+                </svg>
+            </div>
+
+            <!-- Working Navigation Links -->
+            <ul class="nav-links">
+                <li><a href="#" id="nav-projects" class="active" onclick="switchTab('projects')"><i class="fa-solid fa-folder"></i> Projects</a></li>
+                <li><a href="#" id="nav-settings" onclick="switchTab('settings')"><i class="fa-solid fa-gear"></i> Settings</a></li>
+            </ul>
+        </div>
+
+        <!-- Left Column Embedded Overview Panel -->
+        <div class="sidebar-overview">
+            <h4><i class="fa-solid fa-chart-pie"></i> Workspace Overview</h4>
+            <div class="stat-item">
+                <span>Total Projects:</span>
+                <span class="stat-value" id="stat-total-projects">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Active Files:</span>
+                <span class="stat-value">18</span>
+            </div>
+            <div class="stat-item">
+                <span>Storage Used:</span>
+                <span class="stat-value">4.2 MB</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Top Bar with User Info and Header Controls -->
+        <header class="top-bar">
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">D</div>
+                <span class="user-name-text" id="user-display-name">Demo User</span>
+            </div>
+
+            <div class="header-actions">
+                <button class="btn-header btn-danger-outline" onclick="deleteUserAccount()" title="Delete Current User Account">
+                    <i class="fa-solid fa-user-slash"></i> Delete User
+                </button>
+                <button class="btn-header" onclick="logoutUser()" title="Logout Session">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- TAB 1: Projects View Panel -->
+        <section id="view-projects" class="view-panel">
+            <div class="project-section">
+                <div class="project-header">
+                    <h3>Your Code Workspaces</h3>
+                    <button class="btn-primary" onclick="openCreateModal()">
+                        <i class="fa-solid fa-plus"></i> New Project
+                    </button>
+                </div>
+
+               <table>
+    <thead>
+        <tr>
+            <th>Project Name</th>
+            <th>Type</th>
+            <th>Target</th>
+            <th>Last Modified</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="project-list">
+        <!-- Dynamic Rows Here -->
+    </tbody>
+</table>
+            </div>
+        </section>
+
+        <!-- TAB 2: Settings View Panel -->
+        <section id="view-settings" class="view-panel hidden">
+            <div class="settings-card">
+                <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-sliders"></i> Platform Settings</h3>
+                <form onsubmit="saveSettings(event)">
+                    <div class="form-group">
+                        <label>User Profile Name</label>
+                        <input type="text" id="settings-username" value="Demo User">
+                    </div>
+                    <div class="form-group">
+                        <label>Editor Auto-Save Interval</label>
+                        <input type="text" value="Every 30 Seconds" disabled readonly>
+                    </div>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Create New Project Modal -->
+<div id="create-modal" class="modal hidden">
+    <div class="modal-card" style="width: 500px; max-height: 90vh; overflow-y: auto;">
+        <h3 style="margin-bottom: 20px; color: var(--text);"><i class="fa-solid fa-folder-plus"></i> Create New Project</h3>
+        <form id="create-project-form" onsubmit="handleCreateProject(event)">
+            
+            <!-- 1. Project Architecture Type -->
+            <div class="form-group">
+                <label for="project-arch">Select Architecture</label>
+                <select id="project-arch" required style="width: 100%; padding: 10px; background: #1a1a26; border: 1px solid var(--border); color: white; border-radius: 6px;">
+                    <option value="Single Page">Single Page Application (SPA)</option>
+                    <option value="Multi Page">Multi Page Application (MPA)</option>
+                </select>
+            </div>
+
+            <!-- 2. Project Name -->
+            <div class="form-group">
+                <label for="project-name">Project Title</label>
+                <input type="text" id="project-name" required placeholder="e.g. Smart School System">
+            </div>
+
+            <!-- 3. Project Type / Category -->
+            <div class="form-group">
+                <label for="project-type">Project Application Type</label>
+                <select id="project-type" required style="width: 100%; padding: 10px; background: #1a1a26; border: 1px solid var(--border); color: white; border-radius: 6px;">
+                    <option value="Student Management">Student Management</option>
+                    <option value="Account Management">Account Management</option>
+                    <option value="Customer Database">Customer Database</option>
+                    <option value="Billing Application">Billing Application</option>
+                    <option value="Chat Application">Chat Application</option>
+                    <option value="Tools">Tools</option>
+                    <option value="Utility">Utility</option>
+                    <option value="Inventory Management">Inventory Management</option>
+                    <option value="Finance Management">Finance Management</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- 4. Target Business / Industry -->
+            <div class="form-group">
+                <label for="project-target">Project Target / Industry</label>
+                <select id="project-target" required style="width: 100%; padding: 10px; background: #1a1a26; border: 1px solid var(--border); color: white; border-radius: 6px;">
+                    <option value="School">School</option>
+                    <option value="Hospital">Hospital</option>
+                    <option value="Shop">Shop</option>
+                    <option value="Factory">Factory</option>
+                    <option value="Multi">Multi</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- 5. Deployment Platform -->
+            <div class="form-group">
+                <label for="project-platform">Target Platform</label>
+                <select id="project-platform" required style="width: 100%; padding: 10px; background: #1a1a26; border: 1px solid var(--border); color: white; border-radius: 6px;">
+                    <option value="Web">Web</option>
+                    <option value="Windows">Windows</option>
+                    <option value="Linux">Linux</option>
+                    <option value="iOS">iOS</option>
+                    <option value="Android">Android</option>
+                    <option value="Multi Platform">Multi Platform</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <!-- Modal Action Buttons -->
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
+                <button type="button" class="btn-header" onclick="closeCreateModal()">Cancel</button>
+                <button type="submit" class="btn-primary">Save &amp; Create Project</button>
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>

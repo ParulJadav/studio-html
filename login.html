@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STUDIO HTML - Login & Register</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header / Title Bar with SVG Logo -->
+    <header class="app-header">
+        <div class="logo-container">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 100" width="220" height="50">
+              <defs>
+                <linearGradient id="bg-grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#0f172a" />
+                  <stop offset="100%" stop-color="#1e293b" />
+                </linearGradient>
+                <linearGradient id="brand-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#38bdf8" />
+                  <stop offset="50%" stop-color="#818cf8" />
+                  <stop offset="100%" stop-color="#c084fc" />
+                </linearGradient>
+                <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+                  <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#38bdf8" flood-opacity="0.3"/>
+                </filter>
+              </defs>
+              <g transform="translate(10, 10)" filter="url(#shadow)">
+                <rect x="0" y="0" width="80" height="80" rx="16" fill="url(#bg-grad2)" stroke="#334155" stroke-width="2"/>
+                <rect x="4" y="4" width="72" height="72" rx="12" fill="none" stroke="url(#brand-grad)" stroke-width="1.5" stroke-dasharray="8 4"/>
+                <path d="M 24 32 L 14 40 L 24 48" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <line x1="44" y1="26" x2="36" y2="54" stroke="#c084fc" stroke-width="3.5" stroke-linecap="round"/>
+                <path d="M 56 32 L 66 40 L 56 48" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </g>
+              <text x="105" y="50" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-weight="700" font-size="26" letter-spacing="4">STUDIO</text>
+              <text x="228" y="50" fill="url(#brand-grad)" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" letter-spacing="2">HTML</text>
+              <circle cx="332" cy="44" r="4" fill="#38bdf8" />
+              <text x="106" y="72" fill="#64748b" font-family="'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="11" letter-spacing="2">DEVELOPER WORKSPACE</text>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main Container Layout -->
+    <div class="auth-main-wrapper">
+        
+        <!-- Left Side: Features & Banner -->
+        <div class="info-side">
+            <div class="info-content">
+                <h2>Next-Gen Cloud Code Editor & IDE</h2>
+                <p>Build, test, and manage your web development projects in real-time. The ultimate digital workspace designed for modern web developers.</p>
+                <div class="features-list">
+                    <div class="feat-item"><i class="fa-solid fa-code"></i> Real-Time Single & Multi-File Execution</div>
+                    <div class="feat-item"><i class="fa-solid fa-cloud"></i> Secure Cloud Project Storage</div>
+                    <div class="feat-item"><i class="fa-solid fa-share-nodes"></i> Seamless Project Sharing & Collaboration</div>
+                </div>
+            </div>
+            <div class="info-image">
+                <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80" alt="Code Workspace Banner">
+            </div>
+        </div>
+
+        <!-- Right Side: Auth Forms -->
+        <div class="form-side">
+            <div class="form-card">
+                
+                <!-- Toggle Tab Buttons -->
+                <div class="form-toggle-btns">
+                    <button id="btn-login-tab" class="toggle-btn active" onclick="switchForm('login')">Login</button>
+                    <button id="btn-reg-tab" class="toggle-btn" onclick="switchForm('register')">Sign In for New User</button>
+                </div>
+
+                <!-- 1. LOGIN FORM -->
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="input-group">
+                        <label>Email / Username</label>
+                        <input type="email" id="login-email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                    </div>
+
+                    <!-- Captcha Box -->
+                    <div class="input-group captcha-group">
+                        <label>Captcha</label>
+                        <div class="captcha-box">
+                            <span id="captcha-code">8A3F</span>
+                            <button type="button" class="refresh-btn" onclick="generateCaptcha()"><i class="fa-solid fa-rotate-right"></i></button>
+                        </div>
+                        <input type="text" id="captcha-input" placeholder="Type the captcha code here" required>
+                    </div>
+
+                    <div class="form-actions-link">
+                        <a href="#" onclick="showForgotPasswordModal()">Forgot Password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Login</button>
+                </form>
+
+                <!-- 2. REGISTER FORM -->
+                <form id="register-form" class="hidden" onsubmit="handlePreRegister(event)">
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" id="reg-name" placeholder="Enter your full name" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="reg-email" placeholder="example@mail.com" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Mobile Number</label>
+                        <div class="phone-input-wrap">
+                            <select id="country-code" style="width: 150px;">
+    <option value="+93">🇦🇫 +93 (Afghanistan)</option>
+    <option value="+355">🇦🇱 +355 (Albania)</option>
+    <option value="+213">🇩🇿 +213 (Algeria)</option>
+    <option value="+1684">🇦🇸 +1-684 (American Samoa)</option>
+    <option value="+376">🇦🇩 +376 (Andorra)</option>
+    <option value="+244">🇦🇴 +244 (Angola)</option>
+    <option value="+1264">🇦🇮 +1-264 (Anguilla)</option>
+    <option value="+1268">🇦🇬 +1-268 (Antigua and Barbuda)</option>
+    <option value="+54">🇦🇷 +54 (Argentina)</option>
+    <option value="+374">🇦🇲 +374 (Armenia)</option>
+    <option value="+297">🇦🇼 +297 (Aruba)</option>
+    <option value="+61">🇦🇺 +61 (Australia)</option>
+    <option value="+43">🇦🇹 +43 (Austria)</option>
+    <option value="+994">🇦🇿 +994 (Azerbaijan)</option>
+    <option value="+1242">🇧🇸 +1-242 (Bahamas)</option>
+    <option value="+973">🇧🇭 +973 (Bahrain)</option>
+    <option value="+880">🇧🇩 +880 (Bangladesh)</option>
+    <option value="+1246">🇧🇧 +1-246 (Barbados)</option>
+    <option value="+375">🇧🇾 +375 (Belarus)</option>
+    <option value="+32">🇧🇪 +32 (Belgium)</option>
+    <option value="+501">🇧🇿 +501 (Belize)</option>
+    <option value="+229">🇧🇯 +229 (Benin)</option>
+    <option value="+1441">🇧🇲 +1-441 (Bermuda)</option>
+    <option value="+975">🇧🇹 +975 (Bhutan)</option>
+    <option value="+591">🇧🇴 +591 (Bolivia)</option>
+    <option value="+387">🇧🇦 +387 (Bosnia and Herzegovina)</option>
+    <option value="+267">🇧🇼 +267 (Botswana)</option>
+    <option value="+55">🇧🇷 +55 (Brazil)</option>
+    <option value="+246">🇮🇴 +246 (British Indian Ocean Territory)</option>
+    <option value="+1284">🇻🇬 +1-284 (British Virgin Islands)</option>
+    <option value="+673">🇧🇳 +673 (Brunei)</option>
+    <option value="+359">🇧🇬 +359 (Bulgaria)</option>
+    <option value="+226">🇧🇫 +226 (Burkina Faso)</option>
+    <option value="+257">🇧🇮 +257 (Burundi)</option>
+    <option value="+855">🇰🇭 +855 (Cambodia)</option>
+    <option value="+237">🇨🇲 +237 (Cameroon)</option>
+    <option value="+1">🇨🇦 +1 (Canada)</option>
+    <option value="+238">🇨🇻 +238 (Cape Verde)</option>
+    <option value="+1345">🇰🇾 +1-345 (Cayman Islands)</option>
+    <option value="+236">🇨🇫 +236 (Central African Republic)</option>
+    <option value="+235">🇹🇩 +235 (Chad)</option>
+    <option value="+56">🇨🇱 +56 (Chile)</option>
+    <option value="+86">🇨🇳 +86 (China)</option>
+    <option value="+61">🇨🇽 +61 (Christmas Island)</option>
+    <option value="+61">🇨🇨 +61 (Cocos Islands)</option>
+    <option value="+57">🇨🇴 +57 (Colombia)</option>
+    <option value="+269">🇰🇲 +269 (Comoros)</option>
+    <option value="+242">🇨🇬 +242 (Congo - Brazzaville)</option>
+    <option value="+243">🇨🇩 +243 (Congo - Kinshasa)</option>
+    <option value="+682">🇨🇰 +682 (Cook Islands)</option>
+    <option value="+506">🇨🇷 +506 (Costa Rica)</option>
+    <option value="+385">🇭🇷 +385 (Croatia)</option>
+    <option value="+53">🇨🇺 +53 (Cuba)</option>
+    <option value="+599">🇨🇼 +599 (Curaçao)</option>
+    <option value="+357">🇨🇾 +357 (Cyprus)</option>
+    <option value="+420">🇨🇿 +420 (Czech Republic)</option>
+    <option value="+45">🇩🇰 +45 (Denmark)</option>
+    <option value="+253">🇩🇯 +253 (Djibouti)</option>
+    <option value="+1767">🇩🇲 +1-767 (Dominica)</option>
+    <option value="+1809">🇩🇴 +1-809 (Dominican Republic)</option>
+    <option value="+593">🇪🇨 +593 (Ecuador)</option>
+    <option value="+20">🇪🇬 +20 (Egypt)</option>
+    <option value="+503">🇸🇻 +503 (El Salvador)</option>
+    <option value="+240">🇬🇶 +240 (Equatorial Guinea)</option>
+    <option value="+291">🇪🇷 +291 (Eritrea)</option>
+    <option value="+372">🇪🇪 +372 (Estonia)</option>
+    <option value="+268">🇸🇿 +268 (Eswatini)</option>
+    <option value="+251">🇪🇹 +251 (Ethiopia)</option>
+    <option value="+500">🇫🇰 +500 (Falkland Islands)</option>
+    <option value="+298">🇫🇴 +298 (Faroe Islands)</option>
+    <option value="+679">🇫🇯 +679 (Fiji)</option>
+    <option value="+358">🇫🇮 +358 (Finland)</option>
+    <option value="+33">🇫🇷 +33 (France)</option>
+    <option value="+594">🇬🇫 +594 (French Guiana)</option>
+    <option value="+689">🇵🇫 +689 (French Polynesia)</option>
+    <option value="+241">🇬🇦 +241 (Gabon)</option>
+    <option value="+220">🇬🇲 +220 (Gambia)</option>
+    <option value="+995">🇬🇪 +995 (Georgia)</option>
+    <option value="+49">🇩🇪 +49 (Germany)</option>
+    <option value="+233">🇬🇭 +233 (Ghana)</option>
+    <option value="+350">🇬🇮 +350 (Gibraltar)</option>
+    <option value="+30">🇬🇷 +30 (Greece)</option>
+    <option value="+299">🇬🇱 +299 (Greenland)</option>
+    <option value="+1473">🇬🇩 +1-473 (Grenada)</option>
+    <option value="+590">🇬🇵 +590 (Guadeloupe)</option>
+    <option value="+1671">🇬🇺 +1-671 (Guam)</option>
+    <option value="+502">🇬🇹 +502 (Guatemala)</option>
+    <option value="+44">🇬🇬 +44-1481 (Guernsey)</option>
+    <option value="+224">🇬🇳 +224 (Guinea)</option>
+    <option value="+245">🇬🇼 +245 (Guinea-Bissau)</option>
+    <option value="+592">🇬🇾 +592 (Guyana)</option>
+    <option value="+509">🇭🇹 +509 (Haiti)</option>
+    <option value="+504">🇭🇳 +504 (Honduras)</option>
+    <option value="+852">🇭🇰 +852 (Hong Kong SAR)</option>
+    <option value="+36">🇭🇺 +36 (Hungary)</option>
+    <option value="+354">🇮🇸 +354 (Iceland)</option>
+    <option value="+91" selected>🇮🇳 +91 (India)</option>
+    <option value="+62">🇮🇩 +62 (Indonesia)</option>
+    <option value="+98">🇮🇷 +98 (Iran)</option>
+    <option value="+964">🇮🇶 +964 (Iraq)</option>
+    <option value="+353">🇮🇪 +353 (Ireland)</option>
+    <option value="+44">🇮🇲 +44-1624 (Isle of Man)</option>
+    <option value="+972">🇮🇱 +972 (Israel)</option>
+    <option value="+39">🇮🇹 +39 (Italy)</option>
+    <option value="+225">🇨🇮 +225 (Ivory Coast)</option>
+    <option value="+1876">🇯🇲 +1-876 (Jamaica)</option>
+    <option value="+81">🇯🇵 +81 (Japan)</option>
+    <option value="+44">🇯🇪 +44-1534 (Jersey)</option>
+    <option value="+962">🇯🇴 +962 (Jordan)</option>
+    <option value="+7">🇰🇿 +7 (Kazakhstan)</option>
+    <option value="+254">🇰🇪 +254 (Kenya)</option>
+    <option value="+686">🇰🇮 +686 (Kiribati)</option>
+    <option value="+383">🇽🇰 +383 (Kosovo)</option>
+    <option value="+965">🇰🇼 +965 (Kuwait)</option>
+    <option value="+996">🇰🇬 +996 (Kyrgyzstan)</option>
+    <option value="+856">🇱🇦 +856 (Laos)</option>
+    <option value="+371">🇱🇻 +371 (Latvia)</option>
+    <option value="+961">🇱🇧 +961 (Lebanon)</option>
+    <option value="+266">🇱🇸 +266 (Lesotho)</option>
+    <option value="+231">🇱🇷 +231 (Liberia)</option>
+    <option value="+218">🇱🇾 +218 (Libya)</option>
+    <option value="+423">🇱🇮 +423 (Liechtenstein)</option>
+    <option value="+370">🇱🇹 +370 (Lithuania)</option>
+    <option value="+352">🇱🇺 +352 (Luxembourg)</option>
+    <option value="+853">🇲🇴 +853 (Macau SAR)</option>
+    <option value="+389">🇲🇰 +389 (North Macedonia)</option>
+    <option value="+261">🇲🇬 +261 (Madagascar)</option>
+    <option value="+265">🇲🇼 +265 (Malawi)</option>
+    <option value="+60">🇲🇾 +60 (Malaysia)</option>
+    <option value="+960">🇲🇻 +960 (Maldives)</option>
+    <option value="+223">🇲🇱 +223 (Mali)</option>
+    <option value="+356">🇲🇹 +356 (Malta)</option>
+    <option value="+692">🇲🇭 +692 (Marshall Islands)</option>
+    <option value="+596">🇲🇶 +596 (Martinique)</option>
+    <option value="+222">🇲🇷 +222 (Mauritania)</option>
+    <option value="+230">🇲🇺 +230 (Mauritius)</option>
+    <option value="+262">🇾🇹 +262 (Mayotte)</option>
+    <option value="+52">🇲🇽 +52 (Mexico)</option>
+    <option value="+691">🇫🇲 +691 (Micronesia)</option>
+    <option value="+373">🇲🇩 +373 (Moldova)</option>
+    <option value="+377">🇲🇨 +377 (Monaco)</option>
+    <option value="+976">🇲🇳 +976 (Mongolia)</option>
+    <option value="+382">🇲🇪 +382 (Montenegro)</option>
+    <option value="+1664">🇲🇸 +1-664 (Montserrat)</option>
+    <option value="+212">🇲🇦 +212 (Morocco)</option>
+    <option value="+258">🇲🇿 +258 (Mozambique)</option>
+    <option value="+95">🇲🇲 +95 (Myanmar)</option>
+    <option value="+264">🇳🇦 +264 (Namibia)</option>
+    <option value="+674">🇳🇷 +674 (Nauru)</option>
+    <option value="+977">🇳🇵 +977 (Nepal)</option>
+    <option value="+31">🇳🇱 +31 (Netherlands)</option>
+    <option value="+687">🇳🇨 +687 (New Caledonia)</option>
+    <option value="+64">🇳🇿 +64 (New Zealand)</option>
+    <option value="+505">🇳🇮 +505 (Nicaragua)</option>
+    <option value="+227">🇳🇪 +227 (Niger)</option>
+    <option value="+234">🇳🇬 +234 (Nigeria)</option>
+    <option value="+683">🇳🇺 +683 (Niue)</option>
+    <option value="+672">🇳🇫 +672 (Norfolk Island)</option>
+    <option value="+850">🇰🇵 +850 (North Korea)</option>
+    <option value="+1670">🇲🇵 +1-670 (Northern Mariana Islands)</option>
+    <option value="+47">🇳🇴 +47 (Norway)</option>
+    <option value="+968">🇴🇲 +968 (Oman)</option>
+    <option value="+92">🇵🇰 +92 (Pakistan)</option>
+    <option value="+680">🇵🇼 +680 (Palau)</option>
+    <option value="+970">🇵🇸 +970 (Palestine)</option>
+    <option value="+507">🇵🇦 +507 (Panama)</option>
+    <option value="+675">🇵🇬 +675 (Papua New Guinea)</option>
+    <option value="+595">🇵🇾 +595 (Paraguay)</option>
+    <option value="+51">🇵🇪 +51 (Peru)</option>
+    <option value="+63">🇵🇭 +63 (Philippines)</option>
+    <option value="+48">🇵🇱 +48 (Poland)</option>
+    <option value="+351">🇵🇹 +351 (Portugal)</option>
+    <option value="+1787">🇵🇷 +1-787 (Puerto Rico)</option>
+    <option value="+974">🇶🇦 +974 (Qatar)</option>
+    <option value="+262">🇷🇪 +262 (Réunion)</option>
+    <option value="+40">🇷🇴 +40 (Romania)</option>
+    <option value="+7">🇷🇺 +7 (Russia)</option>
+    <option value="+250">🇷🇼 +250 (Rwanda)</option>
+    <option value="+590">🇧🇱 +590 (Saint Barthélemy)</option>
+    <option value="+290">🇸🇭 +290 (Saint Helena)</option>
+    <option value="+1869">🇰🇳 +1-869 (Saint Kitts and Nevis)</option>
+    <option value="+1758">🇱🇨 +1-758 (Saint Lucia)</option>
+    <option value="+590">🇲🇫 +590 (Saint Martin)</option>
+    <option value="+508">🇵🇲 +508 (Saint Pierre and Miquelon)</option>
+    <option value="+1784">🇻🇨 +1-784 (Saint Vincent and the Grenadines)</option>
+    <option value="+685">🇼🇸 +685 (Samoa)</option>
+    <option value="+378">🇸🇲 +378 (San Marino)</option>
+    <option value="+239">🇸🇹 +239 (São Tomé and Príncipe)</option>
+    <option value="+966">🇸🇦 +966 (Saudi Arabia)</option>
+    <option value="+221">🇸🇳 +221 (Senegal)</option>
+    <option value="+381">🇷🇸 +381 (Serbia)</option>
+    <option value="+248">🇸🇨 +248 (Seychelles)</option>
+    <option value="+232">🇸🇱 +232 (Sierra Leone)</option>
+    <option value="+65">🇸🇬 +65 (Singapore)</option>
+    <option value="+1721">🇸🇽 +1-721 (Sint Maarten)</option>
+    <option value="+421">🇸🇰 +421 (Slovakia)</option>
+    <option value="+386">🇸🇮 +386 (Slovenia)</option>
+    <option value="+677">🇸🇧 +677 (Solomon Islands)</option>
+    <option value="+252">🇸🇴 +252 (Somalia)</option>
+    <option value="+27">🇿🇦 +27 (South Africa)</option>
+    <option value="+82">🇰🇷 +82 (South Korea)</option>
+    <option value="+211">🇸🇸 +211 (South Sudan)</option>
+    <option value="+34">🇪🇸 +34 (Spain)</option>
+    <option value="+94">🇱🇰 +94 (Sri Lanka)</option>
+    <option value="+249">🇸🇩 +249 (Sudan)</option>
+    <option value="+597">🇸🇷 +597 (Suriname)</option>
+    <option value="+47">🇸🇯 +47 (Svalbard and Jan Mayen)</option>
+    <option value="+46">🇸🇪 +46 (Sweden)</option>
+    <option value="+41">🇨🇭 +41 (Switzerland)</option>
+    <option value="+963">🇸🇾 +963 (Syria)</option>
+    <option value="+886">🇹🇼 +886 (Taiwan)</option>
+    <option value="+992">🇹🇯 +992 (Tajikistan)</option>
+    <option value="+255">🇹🇿 +255 (Tanzania)</option>
+    <option value="+66">🇹🇭 +66 (Thailand)</option>
+    <option value="+670">🇹🇱 +670 (Timor-Leste)</option>
+    <option value="+228">🇹🇬 +228 (Togo)</option>
+    <option value="+690">🇹🇰 +690 (Tokelau)</option>
+    <option value="+676">🇹🇴 +676 (Tonga)</option>
+    <option value="+1868">🇹🇹 +1-868 (Trinidad and Tobago)</option>
+    <option value="+216">🇹🇳 +216 (Tunisia)</option>
+    <option value="+90">🇹🇷 +90 (Turkey)</option>
+    <option value="+993">🇹🇲 +993 (Turkmenistan)</option>
+    <option value="+1649">🇹🇨 +1-649 (Turks and Caicos Islands)</option>
+    <option value="+688">🇹🇻 +688 (Tuvalu)</option>
+    <option value="+1340">🇻🇮 +1-340 (U.S. Virgin Islands)</option>
+    <option value="+256">🇺🇬 +256 (Uganda)</option>
+    <option value="+380">🇺🇦 +380 (Ukraine)</option>
+    <option value="+971">🇦🇪 +971 (UAE)</option>
+    <option value="+44">🇬🇧 +44 (United Kingdom)</option>
+    <option value="+1">🇺🇸 +1 (United States)</option>
+    <option value="+598">🇺🇾 +598 (Uruguay)</option>
+    <option value="+998">🇺🇿 +998 (Uzbekistan)</option>
+    <option value="+678">🇻🇺 +678 (Vanuatu)</option>
+    <option value="+39">🇻🇦 +39-06 (Vatican City)</option>
+    <option value="+58">🇻🇪 +58 (Venezuela)</option>
+    <option value="+84">🇻🇳 +84 (Vietnam)</option>
+    <option value="+681">🇼🇫 +681 (Wallis and Futuna)</option>
+    <option value="+212">🇪🇭 +212 (Western Sahara)</option>
+    <option value="+967">🇾🇪 +967 (Yemen)</option>
+    <option value="+260">🇿🇲 +260 (Zambia)</option>
+    <option value="+263">🇿🇼 +263 (Zimbabwe)</option>
+</select>
+                            <input type="tel" id="reg-mobile" placeholder="10-digit number" pattern="[0-9]{10}" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Create Password</label>
+                        <input type="password" id="reg-password" placeholder="Set a strong password" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit">Continue to Register</button>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL 1: TERMS AND CONDITIONS -->
+    <div id="tnc-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <h3>Terms of Service & Usage Policy</h3>
+        <div class="tnc-content-box">
+            <p><strong>1. Acceptable Use Policy & Ethical Coding:</strong> Users are strictly prohibited from uploading, writing, compiling, or executing any malicious, unethical, or illegal code, including but not limited to malware, viruses, phishing scripts, port scanners, or unauthorized network exploitation tools.</p>
+            
+            <p><strong>2. Intellectual Property & Copyright Ownership:</strong> You retain ownership of the source code you create. However, STUDIO HTML takes no responsibility for intellectual property or copyright infringement caused by user-submitted code. The user assumes 100% legal liability for all content stored within their workspace.</p>
+
+            <p><strong>3. Data Availability & Cloud Disclaimer:</strong> All project data is stored on cloud infrastructure. While we employ standard backup practices, STUDIO HTML does not guarantee 100% uptime or zero data loss. Outages, cyber-attacks, server corruption, or accidental deletions may occur, and the platform owners shall not be held liable for any data loss or associated business interruption.</p>
+
+            <p><strong>4. Account Security & Responsibilities:</strong> Users are solely responsible for maintaining the confidentiality of their login credentials. Any activity performed under your account will be attributed to you.</p>
+
+            <p><strong>5. Fair Resource Usage:</strong> To prevent abuse, STUDIO HTML reserves the right to rate-limit server execution times, limit API calls, or terminate accounts that perform excessive server requests or automated resource scraping.</p>
+
+            <p><strong>6. Service Modification & Termination:</strong> We reserve the right to suspend or terminate user accounts immediately without prior notice if a breach of these Terms and Conditions is detected.</p>
+
+            <p><strong>7. Governing Law & Jurisdiction:</strong> These Terms shall be governed and construed in accordance with the laws of India. Any legal disputes, claims, or proceedings arising under this agreement shall fall exclusively under the jurisdiction of the courts located in <strong>Botad City, Botad District, Gujarat, India</strong>.</p>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-submit" onclick="acceptTncAndSendOtp()">I Agree &amp; Send OTP Verification</button>
+        </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: OTP VERIFICATION -->
+    <div id="otp-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3>OTP Verification</h3>
+            <p class="sub-text">Enter the verification codes sent to your registered Email and Mobile number.</p>
+
+            <div class="input-group">
+                <label>Email OTP</label>
+                <input type="text" id="otp-email-input" placeholder="Enter Email OTP" maxlength="6">
+            </div>
+
+            <div class="input-group">
+                <label>Mobile OTP</label>
+                <input type="text" id="otp-mobile-input" placeholder="Enter Mobile OTP" maxlength="6">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-submit" onclick="verifyOtpAndRegister()">Verify &amp; Register</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Import -->
+    <script src="auth.js"></script>
+</body>
+</html>

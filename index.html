@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AppStudio IDE - Workspace</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Auth Container -->
+    <div id="auth-container" class="auth-box">
+        <h2>AppStudio IDE</h2>
+        <div id="auth-tabs">
+            <button id="tab-login" class="active" onclick="switchTab('login')">Login</button>
+            <button id="tab-register" onclick="switchTab('register')">Register</button>
+        </div>
+        <form id="login-form" onsubmit="handleLogin(event)">
+            <input type="email" id="login-email" placeholder="Email Address" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button type="submit" class="btn-primary">Login</button>
+        </form>
+        <form id="register-form" class="hidden" onsubmit="handleRegister(event)">
+            <input type="text" id="reg-name" placeholder="Full Name" required>
+            <input type="email" id="reg-email" placeholder="Email Address" required>
+            <input type="password" id="reg-password" placeholder="Password" required>
+            <button type="submit" class="btn-primary">Create Account</button>
+        </form>
+        <p id="auth-message"></p>
+    </div>
+
+    <!-- Main Workspace -->
+    <div id="ide-container" class="hidden">
+        <header class="ide-header">
+            <div class="brand">
+                <h3>🚀 AppStudio IDE</h3>
+                <span id="current-project-title" class="project-tag">No Project Loaded</span>
+            </div>
+            
+            <div class="header-actions">
+                <button onclick="openNewProjectModal()" class="btn-primary">+ New Project</button>
+                <button onclick="openDashboard()" class="btn-secondary">My Projects</button>
+                <button onclick="saveCurrentProject()" class="btn-success">Save</button>
+                <button onclick="shareCurrentProject()" class="btn-info">Share</button>
+            </div>
+
+            <div class="user-info">
+                <span id="user-display-name">User</span>
+                <button onclick="handleLogout()" class="btn-danger">Logout</button>
+            </div>
+        </header>
+
+        <main class="ide-workspace">
+            <!-- Sidebar / File Tabs -->
+            <div class="editor-pane">
+                <div id="file-tabs-bar" class="file-tabs hidden">
+                    <button class="tab-btn active" onclick="switchFileTab('html')">index.html</button>
+                    <button class="tab-btn" onclick="switchFileTab('css')">style.css</button>
+                    <button class="tab-btn" onclick="switchFileTab('js')">script.js</button>
+                </div>
+                <textarea id="code-input" placeholder="Select or Create a project to start coding..."></textarea>
+                <button onclick="runCode()" class="btn-success run-btn">Run Code</button>
+            </div>
+
+            <!-- Live Preview -->
+            <div class="preview-pane">
+                <h4>Live Preview</h4>
+                <iframe id="preview-window"></iframe>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: New Project Selection -->
+    <div id="new-project-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Create New Project</h3>
+            <input type="text" id="new-title-input" placeholder="Project Name" required>
+            
+            <p>Select Project Structure:</p>
+            <div class="structure-options">
+                <label>
+                    <input type="radio" name="projType" value="single" checked>
+                    <span>Single-File Structure (Combined HTML/CSS/JS)</span>
+                </label>
+                <label>
+                    <input type="radio" name="projType" value="multi">
+                    <span>Multi-File Structure (index.html, style.css, script.js)</span>
+                </label>
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="createNewProject()" class="btn-primary">Create</button>
+                <button onclick="closeModal('new-project-modal')" class="btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Project Dashboard -->
+    <div id="dashboard-modal" class="modal hidden">
+    <div class="modal-content wide">
+        <h3>Project Manager</h3>
+        <div id="project-grid" class="project-grid"></div>
+        <div class="modal-actions">
+            <button onclick="closeModal('dashboard-modal')" class="btn-danger">Close</button>
+        </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
