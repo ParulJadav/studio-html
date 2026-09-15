@@ -156,7 +156,7 @@ input:focus, select:focus {
 }
 
 .phone-input-wrap select {
-    width: 120px;
+    width: 130px;
 }
 
 .phone-input-wrap input {
@@ -218,8 +218,10 @@ input:focus, select:focus {
     background: #0369a1;
 }
 
-/* Modals */
-.hidden { display: none !important; }
+/* Modals & Hidden Utilities */
+.hidden {
+    display: none !important;
+}
 
 .modal-overlay {
     position: fixed;
@@ -267,9 +269,4 @@ input:focus, select:focus {
 
 .tnc-content-box p {
     margin-bottom: 10px;
-}
-
-/* Hidden Elements ને સંતાડવા માટે */
-.hidden {
-    display: none !important;
 }
