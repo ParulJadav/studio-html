@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
-// MongoDB Schema
+// MongoDB Schema definition
 const UserSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -11,13 +11,17 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.models.User || mongoose.model('User', UserSchema);
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method Not Allowed' });
     }
 
     try {
-        if (!mongoose.connection.readyState) {
+        if (!process.env.MONGODB_URI) {
+            return res.status(500).json({ success: false, message: 'MONGODB_URI environment variable is missing in Vercel settings.' });
+        }
+
+        if (mongoose.connection.readyState !== 1) {
             await mongoose.connect(process.env.MONGODB_URI);
         }
 
@@ -35,6 +39,7 @@ export default async function handler(req, res) {
 
         return res.status(201).json({ success: true, message: 'User registered successfully!' });
     } catch (error) {
+        console.error("MongoDB Error:", error);
         return res.status(500).json({ success: false, message: error.message });
     }
-}
+};
