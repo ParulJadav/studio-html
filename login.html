@@ -119,7 +119,6 @@
             background: none;
             color: #94a3b8;
             font-weight: 600;
-
             cursor: pointer;
             border-radius: 6px;
             font-size: 13px;
@@ -190,6 +189,7 @@
             letter-spacing: 4px;
             color: #38bdf8;
             font-size: 18px;
+            user-select: none;
         }
 
         .refresh-btn {
@@ -342,26 +342,26 @@
         <div class="form-side">
             <div class="form-card">
                 
-              <!-- Toggle Tab Buttons -->
-<div class="form-toggle-btns">
-    <button type="button" id="btn-login-tab" class="toggle-btn active" onclick="switchForm('login')">Login</button>
-    <button type="button" id="btn-reg-tab" class="toggle-btn" onclick="switchForm('register')">Register New User</button>
-</div>
+                <!-- Toggle Tab Buttons -->
+                <div class="form-toggle-btns">
+                    <button type="button" id="btn-login-tab" class="toggle-btn active" onclick="switchForm('login')">Login</button>
+                    <button type="button" id="btn-reg-tab" class="toggle-btn" onclick="switchForm('register')">Register New User</button>
+                </div>
 
                 <!-- 1. LOGIN FORM -->
                 <form id="login-form" onsubmit="handleLogin(event)">
                     <div class="input-group">
-                        <label>Email / Username</label>
+                        <label for="login-email">Email / Username</label>
                         <input type="email" id="login-email" placeholder="Enter your email" required>
                     </div>
                     <div class="input-group">
-                        <label>Password</label>
+                        <label for="login-password">Password</label>
                         <input type="password" id="login-password" placeholder="Enter your password" required>
                     </div>
 
                     <!-- Captcha Box -->
                     <div class="input-group captcha-group">
-                        <label>Captcha</label>
+                        <label for="captcha-input">Captcha</label>
                         <div class="captcha-box">
                             <span id="captcha-code">8A3F</span>
                             <button type="button" class="refresh-btn" onclick="generateCaptcha()"><i class="fa-solid fa-rotate-right"></i></button>
@@ -379,17 +379,17 @@
                 <!-- 2. REGISTER FORM -->
                 <form id="register-form" class="hidden" onsubmit="handlePreRegister(event)">
                     <div class="input-group">
-                        <label>Full Name</label>
+                        <label for="reg-name">Full Name</label>
                         <input type="text" id="reg-name" placeholder="Enter your full name" required>
                     </div>
                     
                     <div class="input-group">
-                        <label>Email Address</label>
+                        <label for="reg-email">Email Address</label>
                         <input type="email" id="reg-email" placeholder="example@mail.com" required>
                     </div>
 
                     <div class="input-group">
-                        <label>Mobile Number</label>
+                        <label for="reg-mobile">Mobile Number</label>
                         <div class="phone-input-wrap">
                             <select id="country-code">
                                 <option value="+91" selected>🇮🇳 +91 (India)</option>
@@ -402,7 +402,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label>Create Password</label>
+                        <label for="reg-password">Create Password</label>
                         <input type="password" id="reg-password" placeholder="Set a strong password" required>
                     </div>
 
@@ -436,12 +436,12 @@
             <p class="sub-text">Enter the verification codes sent to your registered Email and Mobile number.</p>
 
             <div class="input-group">
-                <label>Email OTP</label>
+                <label for="otp-email-input">Email OTP</label>
                 <input type="text" id="otp-email-input" placeholder="Enter Email OTP" maxlength="6">
             </div>
 
             <div class="input-group">
-                <label>Mobile OTP</label>
+                <label for="otp-mobile-input">Mobile OTP</label>
                 <input type="text" id="otp-mobile-input" placeholder="Enter Mobile OTP" maxlength="6">
             </div>
 
@@ -451,7 +451,6 @@
         </div>
     </div>
 
-    <!-- Script Import -->
     <!-- Inline JavaScript -->
     <script>
         // Dynamic Memory Storage for Real OTPs
@@ -530,50 +529,59 @@
         }
 
         // 3. Verify Dynamic OTP & Save User to MongoDB
-async function verifyOtpAndRegister() {
-    const emailOtp = document.getElementById('otp-email-input').value.trim();
-    const mobileOtp = document.getElementById('otp-mobile-input').value.trim();
+        async function verifyOtpAndRegister() {
+            const emailOtpInput = document.getElementById('otp-email-input');
+            const mobileOtpInput = document.getElementById('otp-mobile-input');
 
-    if (emailOtp === generatedEmailOtp && mobileOtp === generatedMobileOtp) {
-        
-        // Mongo DB માટે ડેટા તૈયાર કરવો
-        const userData = {
-            name: document.getElementById('reg-name').value.trim(),
-            email: document.getElementById('reg-email').value.trim(),
-            mobile: document.getElementById('country-code').value + document.getElementById('reg-mobile').value.trim(),
-            password: document.getElementById('reg-password').value.trim()
-        };
+            const emailOtp = emailOtpInput ? emailOtpInput.value.trim() : '';
+            const mobileOtp = mobileOtpInput ? mobileOtpInput.value.trim() : '';
 
-        try {
-            // Vercel Serverless API પર ડેટા મોકલવો
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
-            });
+            if (emailOtp === generatedEmailOtp && mobileOtp === generatedMobileOtp) {
+                
+                // MongoDB માટે ડેટા તૈયાર કરવો
+                const regName = document.getElementById('reg-name');
+                const regEmail = document.getElementById('reg-email');
+                const regMobile = document.getElementById('reg-mobile');
+                const countryCode = document.getElementById('country-code');
+                const regPassword = document.getElementById('reg-password');
 
-            const result = await response.json();
+                const userData = {
+                    name: regName ? regName.value.trim() : '',
+                    email: regEmail ? regEmail.value.trim() : '',
+                    mobile: (countryCode ? countryCode.value : '') + (regMobile ? regMobile.value.trim() : ''),
+                    password: regPassword ? regPassword.value.trim() : ''
+                };
 
-            if (result.success) {
-                alert("Registration Successful! User saved to MongoDB.");
-                const otpModal = document.getElementById('otp-modal');
-                if (otpModal) otpModal.classList.add('hidden');
+                try {
+                    // Vercel Serverless API પર ડેટા મોકલવો
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(userData)
+                    });
 
-                generatedEmailOtp = null;
-                generatedMobileOtp = null;
+                    const result = await response.json();
 
-                switchForm('login');
+                    if (result.success) {
+                        alert("Registration Successful! User saved to MongoDB.");
+                        const otpModal = document.getElementById('otp-modal');
+                        if (otpModal) otpModal.classList.add('hidden');
+
+                        generatedEmailOtp = null;
+                        generatedMobileOtp = null;
+
+                        switchForm('login');
+                    } else {
+                        alert("Registration Failed: " + result.message);
+                    }
+                } catch (err) {
+                    alert("Server Error: " + err.message);
+                }
+
             } else {
-                alert("Registration Failed: " + result.message);
+                alert("Invalid OTP! Please enter the correct verification codes.");
             }
-        } catch (err) {
-            alert("Server Error: " + err.message);
         }
-
-    } else {
-        alert("Invalid OTP! Please enter the correct verification codes.");
-    }
-}
 
         // Handle Login Event
         function handleLogin(e) {
