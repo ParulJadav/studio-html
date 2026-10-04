@@ -529,13 +529,33 @@
             }
         }
 
-        // 3. Verify Dynamic OTP & Register User
-        function verifyOtpAndRegister() {
-            const emailOtp = document.getElementById('otp-email-input').value.trim();
-            const mobileOtp = document.getElementById('otp-mobile-input').value.trim();
+        // 3. Verify Dynamic OTP & Save User to MongoDB
+async function verifyOtpAndRegister() {
+    const emailOtp = document.getElementById('otp-email-input').value.trim();
+    const mobileOtp = document.getElementById('otp-mobile-input').value.trim();
 
-            if (emailOtp === generatedEmailOtp && mobileOtp === generatedMobileOtp) {
-                alert("Registration Successful! You can now log in.");
+    if (emailOtp === generatedEmailOtp && mobileOtp === generatedMobileOtp) {
+        
+        // Mongo DB માટે ડેટા તૈયાર કરવો
+        const userData = {
+            name: document.getElementById('reg-name').value.trim(),
+            email: document.getElementById('reg-email').value.trim(),
+            mobile: document.getElementById('country-code').value + document.getElementById('reg-mobile').value.trim(),
+            password: document.getElementById('reg-password').value.trim()
+        };
+
+        try {
+            // Vercel Serverless API પર ડેટા મોકલવો
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Registration Successful! User saved to MongoDB.");
                 const otpModal = document.getElementById('otp-modal');
                 if (otpModal) otpModal.classList.add('hidden');
 
@@ -544,9 +564,16 @@
 
                 switchForm('login');
             } else {
-                alert("Invalid OTP! Please enter the correct verification codes.");
+                alert("Registration Failed: " + result.message);
             }
+        } catch (err) {
+            alert("Server Error: " + err.message);
         }
+
+    } else {
+        alert("Invalid OTP! Please enter the correct verification codes.");
+    }
+}
 
         // Handle Login Event
         function handleLogin(e) {
