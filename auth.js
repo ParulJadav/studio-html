@@ -1,26 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-    generateCaptcha();
-
-    // Register Tab Event Listener
-    const btnReg = document.getElementById('btn-reg-tab');
-    const btnLogin = document.getElementById('btn-login-tab');
-
-    if (btnReg) {
-        btnReg.removeAttribute('disabled'); // Disable હોય તો દૂર કરશે
-        btnReg.style.cursor = 'pointer';
-        btnReg.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchForm('register');
-        });
-    }
-
-    if (btnLogin) {
-        btnLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            switchForm('login');
-        });
-    }
-});
 // Dynamic Memory Storage for Real OTPs
 let generatedEmailOtp = null;
 let generatedMobileOtp = null;
@@ -38,11 +15,12 @@ function generateCaptcha() {
     }
 }
 
+// Page Initialization
 document.addEventListener('DOMContentLoaded', () => {
     generateCaptcha();
 });
 
-// Switch Tabs (Login / Register) - FIXED FUNCTION
+// Switch Tabs (Login / Register)
 function switchForm(formType) {
     const loginForm = document.getElementById('login-form');
     const regForm = document.getElementById('register-form');
@@ -54,7 +32,7 @@ function switchForm(formType) {
         if (regForm) regForm.classList.add('hidden');
         if (btnLogin) btnLogin.classList.add('active');
         if (btnReg) btnReg.classList.remove('active');
-    } else {
+    } else if (formType === 'register') {
         if (loginForm) loginForm.classList.add('hidden');
         if (regForm) regForm.classList.remove('hidden');
         if (btnReg) btnReg.classList.add('active');
@@ -76,9 +54,12 @@ async function acceptTncAndSendOtp() {
     const tncModal = document.getElementById('tnc-modal');
     if (tncModal) tncModal.classList.add('hidden');
 
-    const email = document.getElementById('reg-email').value.trim();
-    const countryCode = document.getElementById('country-code').value;
-    const mobile = countryCode + document.getElementById('reg-mobile').value.trim();
+    const emailInput = document.getElementById('reg-email');
+    const mobileInput = document.getElementById('reg-mobile');
+    const countryCodeInput = document.getElementById('country-code');
+
+    const email = emailInput ? emailInput.value.trim() : '';
+    const mobile = (countryCodeInput ? countryCodeInput.value : '') + (mobileInput ? mobileInput.value.trim() : '');
 
     generatedEmailOtp = Math.floor(100000 + Math.random() * 900000).toString();
     generatedMobileOtp = Math.floor(100000 + Math.random() * 900000).toString();
