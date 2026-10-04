@@ -1,3 +1,26 @@
+document.addEventListener('DOMContentLoaded', () => {
+    generateCaptcha();
+
+    // Register Tab Event Listener
+    const btnReg = document.getElementById('btn-reg-tab');
+    const btnLogin = document.getElementById('btn-login-tab');
+
+    if (btnReg) {
+        btnReg.removeAttribute('disabled'); // Disable હોય તો દૂર કરશે
+        btnReg.style.cursor = 'pointer';
+        btnReg.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchForm('register');
+        });
+    }
+
+    if (btnLogin) {
+        btnLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchForm('login');
+        });
+    }
+});
 // Dynamic Memory Storage for Real OTPs
 let generatedEmailOtp = null;
 let generatedMobileOtp = null;
