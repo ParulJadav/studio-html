@@ -17,12 +17,15 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        if (!process.env.MONGODB_URI) {
-            return res.status(500).json({ success: false, message: 'MONGODB_URI environment variable is missing in Vercel settings.' });
+        // Mongo URI (MONGODB_URI અથવા MONGO_URI બંને સપોર્ટ કરશે)
+        const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+
+        if (!mongoUri) {
+            return res.status(500).json({ success: false, message: 'Mongo Connection String is missing in Vercel settings.' });
         }
 
         if (mongoose.connection.readyState !== 1) {
-            await mongoose.connect(process.env.MONGODB_URI);
+            await mongoose.connect(mongoUri);
         }
 
         const { name, email, mobile, password } = req.body;
