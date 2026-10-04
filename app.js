@@ -1,6 +1,5 @@
-const API_URL = 'http://localhost:5000/api/auth';
-const PROJECT_API_URL = 'http://localhost:5000/api/projects';
-
+const API_URL = '/api/auth';
+const PROJECT_API_URL = '/api/projects';
 let currentProject = null;
 let activeTab = 'html'; 
 let multiFiles = { html: '', css: '', js: '' };
