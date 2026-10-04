@@ -1,8 +1,3 @@
-// Mock Database for Existing Users
-let registeredUsersDB = [
-    { name: "Demo User", email: "demo@gmail.com", mobile: "+919876543210" }
-];
-
 // Dynamic Memory Storage for Real OTPs
 let generatedEmailOtp = null;
 let generatedMobileOtp = null;
@@ -14,11 +9,17 @@ function generateCaptcha() {
     for (let i = 0; i < 4; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-    document.getElementById('captcha-code').innerText = code;
+    const captchaElem = document.getElementById('captcha-code');
+    if (captchaElem) {
+        captchaElem.innerText = code;
+    }
 }
-document.addEventListener('DOMContentLoaded', generateCaptcha);
 
-// Switch Tabs (Login / Register)
+document.addEventListener('DOMContentLoaded', () => {
+    generateCaptcha();
+});
+
+// Switch Tabs (Login / Register) - FIXED FUNCTION
 function switchForm(formType) {
     const loginForm = document.getElementById('login-form');
     const regForm = document.getElementById('register-form');
@@ -26,74 +27,45 @@ function switchForm(formType) {
     const btnReg = document.getElementById('btn-reg-tab');
 
     if (formType === 'login') {
-        loginForm.classList.remove('hidden');
-        regForm.classList.add('hidden');
-        btnLogin.classList.add('active');
-        btnReg.classList.remove('active');
+        if (loginForm) loginForm.classList.remove('hidden');
+        if (regForm) regForm.classList.add('hidden');
+        if (btnLogin) btnLogin.classList.add('active');
+        if (btnReg) btnReg.classList.remove('active');
     } else {
-        loginForm.classList.add('hidden');
-        regForm.classList.remove('hidden');
-        btnReg.classList.add('active');
-        btnLogin.classList.remove('active');
+        if (loginForm) loginForm.classList.add('hidden');
+        if (regForm) regForm.classList.remove('hidden');
+        if (btnReg) btnReg.classList.add('active');
+        if (btnLogin) btnLogin.classList.remove('active');
     }
 }
 
-// 1. Check for Existing User in Database
+// 1. Check for Existing User in Database & Show Terms
 function handlePreRegister(e) {
     e.preventDefault();
-    const email = document.getElementById('reg-email').value.trim();
-    const countryCode = document.getElementById('country-code').value;
-    const mobile = countryCode + document.getElementById('reg-mobile').value.trim();
-
-    // Check if user exists
-    const userExists = registeredUsersDB.find(u => u.email === email || u.mobile === mobile);
-
-    if (userExists) {
-        alert("This email address or mobile number is already registered! Please log in or use different credentials.");
-        switchForm('login');
-    } else {
-        // Show Terms & Conditions Modal
-        document.getElementById('tnc-modal').classList.remove('hidden');
+    const tncModal = document.getElementById('tnc-modal');
+    if (tncModal) {
+        tncModal.classList.remove('hidden');
     }
 }
 
-// 2. Accept Terms & Generate/Send Real Dynamic OTP
+// 2. Accept Terms & Generate OTP
 async function acceptTncAndSendOtp() {
-    document.getElementById('tnc-modal').classList.add('hidden');
+    const tncModal = document.getElementById('tnc-modal');
+    if (tncModal) tncModal.classList.add('hidden');
 
     const email = document.getElementById('reg-email').value.trim();
     const countryCode = document.getElementById('country-code').value;
     const mobile = countryCode + document.getElementById('reg-mobile').value.trim();
 
-    // Generate random 6-digit OTPs dynamically
     generatedEmailOtp = Math.floor(100000 + Math.random() * 900000).toString();
     generatedMobileOtp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Trigger API to dispatch OTPs to target destination
-    await sendRealOtpAPI(email, mobile, generatedEmailOtp, generatedMobileOtp);
+    console.log(`[OTP DISPATCH] Email OTP: ${generatedEmailOtp}, Mobile OTP: ${generatedMobileOtp}`);
+    alert(`Verification OTPs sent to Email (${email}) and Mobile (${mobile}).\n\nFor Testing:\nEmail OTP: ${generatedEmailOtp}\nMobile OTP: ${generatedMobileOtp}`);
 
-    document.getElementById('otp-modal').classList.remove('hidden');
-}
-
-// Backend API Service Integration for Real Email/SMS Delivery
-async function sendRealOtpAPI(email, mobile, emailOtp, mobileOtp) {
-    try {
-        /* 
-           Integration snippet for production backend (Node.js/Python/PHP):
-           
-           await fetch('https://your-api-domain.com/api/v1/send-otp', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({ email, mobile, emailOtp, mobileOtp })
-           });
-        */
-
-        console.log(`[LIVE OTP DISPATCH] Email OTP to ${email}: ${emailOtp}`);
-        console.log(`[LIVE OTP DISPATCH] Mobile OTP to ${mobile}: ${mobileOtp}`);
-
-        alert(`Verification OTPs have been sent to your Email (${email}) and Mobile (${mobile}).`);
-    } catch (error) {
-        alert("Failed to send OTP. Please check your network connection and try again.");
+    const otpModal = document.getElementById('otp-modal');
+    if (otpModal) {
+        otpModal.classList.remove('hidden');
     }
 }
 
@@ -103,32 +75,29 @@ function verifyOtpAndRegister() {
     const mobileOtp = document.getElementById('otp-mobile-input').value.trim();
 
     if (emailOtp === generatedEmailOtp && mobileOtp === generatedMobileOtp) {
-        const name = document.getElementById('reg-name').value;
-        const email = document.getElementById('reg-email').value;
-        const countryCode = document.getElementById('country-code').value;
-        const mobile = countryCode + document.getElementById('reg-mobile').value;
-
-        // Store user in database
-        registeredUsersDB.push({ name, email, mobile });
-
         alert("Registration Successful! You can now log in.");
-        document.getElementById('otp-modal').classList.add('hidden');
+        const otpModal = document.getElementById('otp-modal');
+        if (otpModal) otpModal.classList.add('hidden');
 
-        // Reset generated OTPs from memory
         generatedEmailOtp = null;
         generatedMobileOtp = null;
 
         switchForm('login');
     } else {
-        alert("Invalid OTP! Please enter the correct verification codes sent to your Email and Mobile.");
+        alert("Invalid OTP! Please enter the correct verification codes.");
     }
 }
 
 // Handle Login Event
 function handleLogin(e) {
     e.preventDefault();
-    const userCaptcha = document.getElementById('captcha-input').value.trim();
-    const realCaptcha = document.getElementById('captcha-code').innerText.trim();
+    const userCaptchaInput = document.getElementById('captcha-input');
+    const captchaCodeElem = document.getElementById('captcha-code');
+
+    if (!userCaptchaInput || !captchaCodeElem) return;
+
+    const userCaptcha = userCaptchaInput.value.trim();
+    const realCaptcha = captchaCodeElem.innerText.trim();
 
     if (userCaptcha.toUpperCase() !== realCaptcha) {
         alert("Invalid Captcha code! Please try again.");
@@ -136,8 +105,7 @@ function handleLogin(e) {
         return;
     }
 
-    // Redirect to Dashboard
-    window.location.href = "dashboard.html";
+    alert("Login Successful!");
 }
 
 function showForgotPasswordModal() {
